@@ -4,7 +4,11 @@ from flask import make_response
 
 
 def make_error_response(error_msg, status_code):
-    return make_response(json.dumps({'error': error_msg}), status_code)
+    return make_response(
+        json.dumps({'error': error_msg}),
+        status_code,
+        {'Content-Type': 'application/json'}
+    )
 
 
 def create_400():

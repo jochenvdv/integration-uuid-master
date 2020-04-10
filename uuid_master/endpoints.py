@@ -20,11 +20,12 @@ def get_uuidmapping_by_uuid(uuid):
     }
 
     """
-    try:
-        uuid_mappings = UuidMapping.query.filter(UuidMapping.uuid == uuid).all()
-        return make_response(create_resp_from_uuidmappings(uuid_mappings), 200)
-    except NoResultFound:
+    uuid_mappings = UuidMapping.query.filter(UuidMapping.uuid == uuid).all()
+
+    if not uuid_mappings:
         return create_404()
+
+    return make_response(create_resp_from_uuidmappings(uuid_mappings), 200)
 
 
 def create_uuidmapping():

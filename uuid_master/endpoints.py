@@ -68,7 +68,6 @@ def create_uuidmapping():
     )
 
 
-
 def partially_update_uuidmapping_by_uuid(uuid):
     """
     Partially update a UUID mapping
@@ -80,4 +79,37 @@ def partially_update_uuidmapping_by_uuid(uuid):
     }
 
     """
-pass
+    from uuid_master.schemas import uuid_mapping_schema
+    from uuid_master.models import known_applications
+
+    try:
+        uuid_mappings = uuid_mapping_schema.load(request.json)
+    except ValidationError:
+        return create_400()
+
+    existing_uuid_mappings = UuidMapping.query.filter(UuidMapping.uuid == uuid).all()
+
+    if not existing_uuid_mappings:
+        return create_404()
+
+    entities = {m.application.application_name: m for m in existing_uuid_mappings}
+
+    for app_name in uuid_mappings.keys():
+        if app_name in entities:
+            # update existing UuidMapping
+            entities[app_name].app_local_id = uuid_mappings[app_name]
+            db.session.merge(entities[app_name])
+        else:
+            # create new UuidMapping
+            application = known_applications[app_name]
+            entity = UuidMapping(
+                uuid=uuid,
+                application=application,
+                app_local_id=uuid_mappings[app_name]
+            )
+            entities[app_name] = entity
+            db.session.add(entity)
+
+    db.session.commit()
+
+    return make_response(create_resp_from_uuidmappings(list(entities.values())), 200)

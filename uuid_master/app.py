@@ -1,7 +1,7 @@
 from flask import Flask, g
 
 from uuid_master.models import db, Application, ApiKey, UuidMapping, update_known_applications
-from uuid_master.endpoints import get_uuidmapping_by_uuid, create_uuidmapping
+from uuid_master.endpoints import get_uuidmapping_by_uuid, create_uuidmapping, partially_update_uuidmapping_by_uuid
 from uuid_master.schemas import create_schema_from_app_list
 
 
@@ -22,8 +22,10 @@ def create_app():
     # register routes & auth
     app.add_url_rule('/uuids/<uuid>', methods=['GET'], view_func=get_uuidmapping_by_uuid)
     app.add_url_rule('/uuids', methods=['POST'], view_func=create_uuidmapping)
+    app.add_url_rule('/uuids/<uuid>', methods=['PATCH'], view_func=partially_update_uuidmapping_by_uuid)
 
-    # initialize SQLAlchemy
+
+# initialize SQLAlchemy
     db.init_app(app)
 
     return app

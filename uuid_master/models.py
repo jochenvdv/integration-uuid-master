@@ -12,7 +12,6 @@ known_applications = None
 def update_known_applications(applications):
     global known_applications
     known_applications = {a.application_name: a for a in applications}
-    print(known_applications)
 
 
 class UuidMapping(db.Model):
@@ -24,10 +23,16 @@ class UuidMapping(db.Model):
     application_id = db.Column(db.Integer, db.ForeignKey('application.id'), nullable=True)
     application = db.relationship('Application', backref=db.backref('uuid_mappings', lazy=True))
 
+    def __repr__(self):
+        return f'UuidMapping[uuid={self.uuid}, application={self.application.application_name}, app_local_id={self.app_local_id}]'
+
 
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     application_name = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f'Application[name={self.application_name}]'
 
 
 class ApiKey(db.Model):

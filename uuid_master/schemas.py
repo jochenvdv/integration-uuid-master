@@ -1,5 +1,3 @@
-import json
-
 from marshmallow import Schema, fields
 
 

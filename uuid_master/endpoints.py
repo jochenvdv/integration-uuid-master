@@ -2,8 +2,8 @@ from flask import make_response
 from flask.views import MethodView
 from sqlalchemy.orm.exc import NoResultFound
 
-from uuid_master.mapping import uuidmapping_to_json
-from uuid_master.models import db, UuidMapping
+from uuid_master.schemas import create_resp_from_uuidmappings
+from uuid_master.models import db, UuidMapping, Application
 from uuid_master.errors import return_404
 
 
@@ -20,7 +20,7 @@ def get_uuidmapping_by_uuid(uuid):
     """
     try:
         uuid_mappings = UuidMapping.query.filter(UuidMapping.uuid == uuid).all()
-        return make_response(uuidmapping_to_json(uuid_mappings), 200)
+        return make_response(create_resp_from_uuidmappings(uuid_mappings), 200)
     except NoResultFound:
         return_404()
 
@@ -36,7 +36,7 @@ def create_uuidmapping():
     }
 
     """
-pass
+
 
 
 def partially_update_uuidmapping_by_uuid(uuid):

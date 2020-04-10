@@ -3,7 +3,7 @@ from uuid_master import __version__
 
 def test_happy_flow(client):
     initial_uuidmapping = {
-        'bestapp': 'bestapp_id_1'
+        'frontend': 'frontend_id_1',
     }
     resp = client.post('/uuids', json=initial_uuidmapping)
 
@@ -16,7 +16,7 @@ def test_happy_flow(client):
     assert resp.json == initial_uuidmapping
 
     uuidmapping_update = {
-        'someotherapp': 'FOOBAR_ID'
+        'facturatie': 'facturatie_id_1'
     }
     resp = client.patch(entity_loc, json=uuidmapping_update)
     assert resp.status_code == 200
@@ -27,8 +27,8 @@ def test_happy_flow(client):
     assert resp.json == updated_uuidmapping
 
     uuidmapping_update2 = {
-        'bestapp': '123456',
-        'someotherapp': '(°.°)'
+        'frontend': 'frontend_id_2',
+        'facturatie': 'facturatie_id_1'
     }
     resp = client.patch(entity_loc, json=uuidmapping_update2)
     assert resp.status_code == 200
@@ -50,8 +50,8 @@ def test_get_uuidmapping_404(client):
 
 def test_post_uuidmapping_400(client):
     initial_uuidmapping = {
-        'unknownapp': '123456',
-        'existingapp': '(°.°)'
+        'kassa': '123456',
+        'fakeapp': '(°.°)'
     }
 
     resp = client.post('/uuids', json=initial_uuidmapping)
@@ -77,8 +77,8 @@ def test_patch_uuidmapping_404(client):
 
 def test_patch_uuidmapping_400(client):
     uuidmapping_update = {
-        'unknownapp': '123456',
-        'existingapp': '(°.°)'
+        'kassa': '123456',
+        'fakeapp': '(°.°)'
     }
     resp = client.patch('/uuids/non-existant', json=uuidmapping_update)
 

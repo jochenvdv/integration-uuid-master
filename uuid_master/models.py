@@ -6,6 +6,13 @@ from uuid_master.utils import create_api_key, create_uuid
 
 
 db = SQLAlchemy()
+known_applications = None
+
+
+def update_known_applications(applications):
+    global known_applications
+    known_applications = {a.application_name: a for a in applications}
+    print(known_applications)
 
 
 class UuidMapping(db.Model):

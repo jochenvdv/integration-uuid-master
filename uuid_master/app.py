@@ -1,13 +1,14 @@
-from flask import Flask
+from flask import Flask, g
 
-from uuid_master.models import db, Application, ApiKey, UuidMapping
-from uuid_master.endpoints import get_uuidmapping_by_uuid
+from uuid_master.models import db, Application, ApiKey, UuidMapping, update_known_applications
+from uuid_master.endpoints import get_uuidmapping_by_uuid, create_uuidmapping
 from uuid_master.schemas import create_schema_from_app_list
 
 
 def load_applications():
     applications = Application.query.all()
     create_schema_from_app_list(applications)
+    update_known_applications(applications)
 
 
 def create_app():
@@ -15,14 +16,15 @@ def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
 
+    # generate validation schema based on applications known in database
+    app.before_first_request(load_applications)
+
     # register routes & auth
-    app.add_url_rule('/uuids/<uuid>', view_func=get_uuidmapping_by_uuid)
+    app.add_url_rule('/uuids/<uuid>', methods=['GET'], view_func=get_uuidmapping_by_uuid)
+    app.add_url_rule('/uuids', methods=['POST'], view_func=create_uuidmapping)
 
     # initialize SQLAlchemy
     db.init_app(app)
-
-    # generate validation schema based on applications known in database
-    app.before_first_request(load_applications)
 
     return app
 

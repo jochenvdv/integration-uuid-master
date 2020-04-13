@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-rm /tmp/uuidmappings.db
-export FLASK_ENV=development
-export FLASK_APP=./uuid_master/app.py
-python -m flask run
+mkdir -p /opt/uuid-master
+poetry run gunicorn \
+  -b localhost:5000 \
+  -e SQLALCHEMY_DATABASE_URI="sqlite:////opt/uuid-master/database.sqlite" \
+  uuid_master.app:app

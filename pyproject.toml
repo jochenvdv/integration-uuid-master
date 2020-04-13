@@ -5,7 +5,7 @@ description = "UUID Master API voor Integration Project (EhB)"
 authors = ["Jochen Van de Velde <jochen.van.de.velde@student.ehb.be>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 flask = "^1.1.2"
 sqlalchemy = "^1.3.16"
 marshmallow = "^3.5.1"
@@ -14,6 +14,7 @@ Flask-SQLAlchemy = "^2.4.1"
 flask-apispec = "^0.8.8"
 pytest-flask = "^1.0.0"
 pytest-flask-sqlalchemy = "^1.0.2"
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

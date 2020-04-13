@@ -52,6 +52,7 @@ def create_app():
 
     return app
 
+
 # launch app
 app = create_app()
 db.create_all(app=app)

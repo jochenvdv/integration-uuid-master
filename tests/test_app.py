@@ -11,9 +11,10 @@ def test_happy_flow(client):
     assert 'Location' in resp.headers
 
     entity_loc = resp.headers['Location']
+    uuid = entity_loc.split('/')[-1]
     resp = client.get(entity_loc)
     assert resp.status_code == 200
-    assert resp.json == initial_uuidmapping
+    assert resp.json == {'uuid': uuid, **initial_uuidmapping}
 
     uuidmapping_update = {
         'facturatie': 'facturatie_id_1'
@@ -24,7 +25,7 @@ def test_happy_flow(client):
     updated_uuidmapping = {**initial_uuidmapping, **uuidmapping_update}
     resp = client.get(entity_loc)
     assert resp.status_code == 200
-    assert resp.json == updated_uuidmapping
+    assert resp.json == {'uuid': uuid, **updated_uuidmapping}
 
     uuidmapping_update2 = {
         'frontend': 'frontend_id_2',
@@ -36,7 +37,7 @@ def test_happy_flow(client):
     updated_uuidmapping = uuidmapping_update2
     resp = client.get(entity_loc)
     assert resp.status_code == 200
-    assert resp.json == updated_uuidmapping
+    assert resp.json == {'uuid': uuid, **updated_uuidmapping}
 
 
 def test_get_uuidmapping_404(client):
@@ -64,8 +65,8 @@ def test_post_uuidmapping_400(client):
 
 def test_patch_uuidmapping_404(client):
     uuidmapping_update = {
-        'bestapp': '123456',
-        'someotherapp': '(°.°)'
+        'kassa': '123456',
+        'frontend': '(°.°)'
     }
     resp = client.patch('/uuids/non-existant', json=uuidmapping_update)
 

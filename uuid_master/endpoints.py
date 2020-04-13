@@ -85,7 +85,7 @@ def partially_update_uuidmapping_by_uuid(uuid):
 
     try:
         uuid_mappings = uuid_mapping_schema.load(request.json)
-    except ValidationError:
+    except ValidationError as err:
         return create_400()
 
     existing_uuid_mappings = UuidMapping.query.filter(UuidMapping.uuid == uuid).all()

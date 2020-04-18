@@ -15,6 +15,10 @@ def create_400():
     return make_error_response('Bad request', 400)
 
 
+def create_409():
+    return make_error_response('Conflict', 409)
+
+
 def create_401():
     return make_error_response('Unauthorized', 401)
 

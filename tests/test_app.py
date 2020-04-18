@@ -7,7 +7,7 @@ def test_happy_flow(client):
     }
     resp = client.post('/uuids', json=initial_uuidmapping)
 
-    assert resp.status_code is 201
+    assert resp.status_code == 201
     assert 'Location' in resp.headers
 
     entity_loc = resp.headers['Location']
@@ -39,9 +39,76 @@ def test_happy_flow(client):
     assert resp.status_code == 200
     assert resp.json == {'uuid': uuid, **updated_uuidmapping}
 
+    resp = client.get('/uuids/frontend/frontend_id_2')
+    assert resp.status_code == 200
+    assert resp.json == {'uuid': uuid, **updated_uuidmapping}
+
+
+def test_post_uuidmapping_unique_violation(client):
+    initial_uuidmapping_1 = {
+        'frontend': 'frontend_id_1',
+    }
+    resp = client.post('/uuids', json=initial_uuidmapping_1)
+
+    assert resp.status_code == 201
+
+    initial_uuidmapping_2 = {
+        'frontend': 'frontend_id_1',
+    }
+    resp = client.post('/uuids', json=initial_uuidmapping_2)
+
+    assert resp.status_code == 409
+    assert resp.json == {
+        'error': 'Conflict'
+    }
+
+
+def test_patch_uuidmapping_unique_violation(client):
+    initial_uuidmapping_1 = {
+        'frontend': 'frontend_id_3',
+    }
+    resp = client.post('/uuids', json=initial_uuidmapping_1)
+
+    assert resp.status_code == 201
+
+    initial_uuidmapping_2 = {
+        'frontend': 'frontend_id_4',
+    }
+    resp = client.post('/uuids', json=initial_uuidmapping_2)
+
+    entity_loc = resp.headers['Location']
+    assert resp.status_code == 201
+
+    uuidmapping_update = {
+        'frontend': 'frontend_id_3'
+    }
+    resp = client.patch(entity_loc, json=uuidmapping_update)
+    assert resp.status_code == 409
+    assert resp.json == {
+        'error': 'Conflict'
+    }
+
 
 def test_get_uuidmapping_404(client):
     resp = client.get('/uuids/non-existant')
+
+    assert resp.status_code == 404
+    assert resp.json == {
+        'error': 'Not found'
+    }
+
+
+def test_get_uuidmapping_by_appid_404_app(client):
+    resp = client.get('/uuids/unknownapp/appid')
+
+    assert resp.status_code == 404
+    assert resp.json == {
+        'error': 'Not found'
+    }
+
+
+def test_get_uuidmapping_by_appid_404_appid(client):
+    resp = client.get('/uuids/kassa/unknownappid')
 
     assert resp.status_code == 404
     assert resp.json == {

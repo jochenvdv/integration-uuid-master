@@ -1,8 +1,13 @@
 from flask import Flask, g, current_app
 
 from uuid_master.models import db, Application, ApiKey, UuidMapping, update_known_applications
-from uuid_master.endpoints import get_uuidmapping_by_uuid, create_uuidmapping, partially_update_uuidmapping_by_uuid
 from uuid_master.schemas import create_schema_from_app_list
+from uuid_master.endpoints import (
+    get_uuidmapping_by_uuid,
+    create_uuidmapping,
+    partially_update_uuidmapping_by_uuid,
+    get_uuidmapping_by_application_name_and_id
+)
 
 
 def load_applications():
@@ -45,9 +50,9 @@ def create_app():
     app.add_url_rule('/uuids/<uuid>', methods=['GET'], view_func=get_uuidmapping_by_uuid)
     app.add_url_rule('/uuids', methods=['POST'], view_func=create_uuidmapping)
     app.add_url_rule('/uuids/<uuid>', methods=['PATCH'], view_func=partially_update_uuidmapping_by_uuid)
+    app.add_url_rule('/uuids/<app_name>/<app_id>',
+                     methods=['GET'], view_func=get_uuidmapping_by_application_name_and_id)
 
-
-    # initialize SQLAlchemy
     db.init_app(app)
 
     return app
@@ -55,4 +60,6 @@ def create_app():
 
 # launch app
 app = create_app()
-db.create_all(app=app)
+
+with app.app_context():
+    db.create_all(app=app)

@@ -1,0 +1,19 @@
+trigger:
+  - master
+
+pool: default
+
+steps:
+  - script: |
+      cd /opt/uuid-master
+      sudo git fetch
+      sudo git rebase origin/master
+    displayName: 'Update code'
+  - script: |
+      cd /opt/uuid-master
+      sudo poetry install
+    displayName: 'Install dependencies'
+  - script: |
+      cd /opt/uuid-master
+      sudo systemctl restart uuid-master.service
+    displayName: 'Restart application'
